@@ -111,6 +111,51 @@ def model_test_mode(args, feeder, hparams, global_step):
 		model.add_loss()
 		return model
 
+def train_experiment(log_dir, args, hparams):
+	save_dir = os.path.join(log_dir, 'taco_pretrained')
+	plot_dir = os.path.join(log_dir, 'plots')
+	wav_dir = os.path.join(log_dir, 'wavs')
+	mel_dir = os.path.join(log_dir, 'mel-spectrograms')
+	eval_dir = os.path.join(log_dir, 'eval-dir')
+	eval_plot_dir = os.path.join(eval_dir, 'plots')
+	eval_wav_dir = os.path.join(eval_dir, 'wavs')
+	tensorboard_dir = os.path.join(log_dir, 'tacotron_events')
+	meta_folder = os.path.join(log_dir, 'metas')
+	os.makedirs(save_dir, exist_ok=True)
+	os.makedirs(plot_dir, exist_ok=True)
+	os.makedirs(wav_dir, exist_ok=True)
+	os.makedirs(mel_dir, exist_ok=True)
+	os.makedirs(eval_dir, exist_ok=True)
+	os.makedirs(eval_plot_dir, exist_ok=True)
+	os.makedirs(eval_wav_dir, exist_ok=True)
+	os.makedirs(tensorboard_dir, exist_ok=True)
+	os.makedirs(meta_folder, exist_ok=True)
+
+	checkpoint_path = os.path.join(save_dir, 'tacotron_model.ckpt')
+	input_path = os.path.join(args.base_dir, args.tacotron_input)
+
+	if hparams.predict_linear:
+		linear_dir = os.path.join(log_dir, 'linear-spectrograms')
+		os.makedirs(linear_dir, exist_ok=True)
+
+	log('Checkpoint path: {}'.format(checkpoint_path))
+	log('Loading training data from: {}'.format(input_path))
+	log('Using model: {}'.format(args.model))
+	log(hparams_debug_string())
+
+	#Start by setting a seed for repeatability
+	tf.set_random_seed(hparams.tacotron_random_seed)
+
+	#Set up data feeder
+	coord = tf.train.Coordinator()
+	with tf.variable_scope('datafeeder') as scope:
+		feeder = Feeder(coord, input_path, hparams)
+
+	#Set up model:
+	global_step = tf.Variable(0, name='global_step', trainable=False)
+	model, stats = model_train_mode(args, feeder, hparams, global_step)
+	
+	
 def train(log_dir, args, hparams):
 	save_dir = os.path.join(log_dir, 'taco_pretrained')
 	plot_dir = os.path.join(log_dir, 'plots')
