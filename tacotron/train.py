@@ -151,9 +151,24 @@ def train_experiment(log_dir, args, hparams):
 	with tf.variable_scope('datafeeder') as scope:
 		feeder = Feeder(coord, input_path, hparams)
 
-	#Set up model:
-	global_step = tf.Variable(0, name='global_step', trainable=False)
-	model, stats = model_train_mode(args, feeder, hparams, global_step)
+
+		
+	graph = tf.Graph()
+	with graph.as_default():
+    		#a = tf.random.uniform((128, 128), dtype=tf.int32, maxval=3)
+    		#b = tf.random.uniform((128, 128), dtype=tf.int32, maxval=3)
+    		#c = tf.random.uniform((128, 128), dtype=tf.int32, maxval=3)
+
+		#Set up model:
+		global_step = tf.Variable(0, name='global_step', trainable=False)
+		model, stats = model_train_mode(args, feeder, hparams, global_step)
+		
+		sess = tf.compat.v1.Session()
+		tf.io.write_graph(sess.graph, 'tacotron2_exp', 'train.pb', as_text=False)
+		tf.io.write_graph(sess.graph, 'tacotron2_exp', 'train.pbtxt', as_text=True)
+
+		writer = tf.summary.FileWriter(logdir='uncased_L-2_H-128_A-2', graph=graph)
+		writer.flush()
 	
 	
 def train(log_dir, args, hparams):
