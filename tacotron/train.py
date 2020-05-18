@@ -167,7 +167,7 @@ def train_experiment(log_dir, args, hparams):
 		tf.io.write_graph(sess.graph, 'tacotron2_exp', 'train.pb', as_text=False)
 		tf.io.write_graph(sess.graph, 'tacotron2_exp', 'train.pbtxt', as_text=True)
 
-		writer = tf.summary.FileWriter(logdir='uncased_L-2_H-128_A-2', graph=graph)
+		writer = tf.summary.FileWriter(logdir='tacotron2-logexperiment', graph=graph)
 		writer.flush()
 	
 	
