@@ -90,6 +90,7 @@ def train(args, log_dir, hparams):
 		log('TRAINING IS ALREADY COMPLETE!!')
 
 def main():
+	
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--base_dir', default='')
 	parser.add_argument('--hparams', default='',
