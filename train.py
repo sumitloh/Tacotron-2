@@ -130,6 +130,8 @@ def main():
 	elif args.model == 'WaveNet':
 		wavenet_train(args, log_dir, hparams, args.wavenet_input)
 	elif args.model == 'Tacotron-2':
+		train(args, log_dir, hparams)
+	elif args.model == 'Tacotron-2-sumitloh':
 		train_experiment(args, log_dir, hparams)
 	else:
 		raise ValueError('Model provided {} unknown! {}'.format(args.model, accepted_models))
